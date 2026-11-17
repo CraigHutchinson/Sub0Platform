@@ -1,0 +1,15 @@
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sub0platform"
+version = "0.1.0"
+description = "The operating-system layer shared by the Sub0 projects: paths, dirs, processes, atomic files, locks (Windows, Linux, WSL)."
+requires-python = ">=3.10"
+license = { text = "MIT" }
+dependencies = []
+
+[tool.setuptools.packages.find]
+where = ["python"]
+include = ["sub0platform*"]

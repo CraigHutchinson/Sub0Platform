@@ -1,0 +1,23 @@
+{
+  "_comment": "Path mapping between Windows drive paths and WSL mounts. Both the Python package and the C++ library test these.",
+  "toPosix": [
+    ["D:/LlmModels/x.gguf", "/mnt/d/LlmModels/x.gguf"],
+    ["D:\\LlmModels\\x.gguf", "/mnt/d/LlmModels/x.gguf"],
+    ["c:/tools", "/mnt/c/tools"],
+    ["C:\\", "/mnt/c/"],
+    ["/opt/llama", "/opt/llama"],
+    ["relative/path", "relative/path"],
+    ["\\\\server\\share\\x", "\\\\server\\share\\x"],
+    ["D:relative", "D:relative"],
+    ["", ""]
+  ],
+  "toWindows": [
+    ["/mnt/d/LlmModels/x.gguf", "D:/LlmModels/x.gguf"],
+    ["/mnt/c", "C:/"],
+    ["/mnt/c/", "C:/"],
+    ["/mnt/data/x", "/mnt/data/x"],
+    ["/home/user", "/home/user"],
+    ["D:/already", "D:/already"],
+    ["", ""]
+  ]
+}
