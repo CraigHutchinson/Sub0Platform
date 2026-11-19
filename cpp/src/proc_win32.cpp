@@ -197,8 +197,8 @@ namespace {
 /// PATHEXT as lower-case extensions (".com;.exe;.bat;.cmd" when unset).
 std::vector<std::string> pathExtensions()
 {
-    const char* v = std::getenv("PATHEXT");
-    std::string all = v && *v ? v : ".COM;.EXE;.BAT;.CMD";
+    std::string all = getEnvironment("PATHEXT").value_or("");
+    if (all.empty()) all = ".COM;.EXE;.BAT;.CMD";
     for (auto& c : all) c = static_cast<char>(std::tolower(static_cast<unsigned char>(c)));
     std::vector<std::string> out;
     std::size_t at = 0;
@@ -237,8 +237,7 @@ std::filesystem::path findOnPath(const std::string& name)
         return {};
     };
     if (name.find_first_of("/\\") != std::string::npos) return tryName(std::filesystem::path(win32::widen(name)));
-    const char* path = std::getenv("PATH");
-    const std::string all = path ? path : "";
+    const std::string all = getEnvironment("PATH").value_or("");
     std::size_t at = 0;
     while (at <= all.size()) {
         const auto semi = all.find(';', at);
@@ -253,7 +252,7 @@ std::filesystem::path findOnPath(const std::string& name)
 
 void setEnvironment(const std::string& name, const std::string& value)
 {
-    // Both copies: the C runtime's (getenv) and the system's (inherited by CreateProcessW).
+    // Both copies: the C runtime's (std::getenv) and the system's (inherited by CreateProcessW, and read by getEnvironment).
     ::_wputenv_s(win32::widen(name).c_str(), win32::widen(value).c_str());
     ::SetEnvironmentVariableW(win32::widen(name).c_str(), win32::widen(value).c_str());
 }
@@ -262,6 +261,28 @@ void unsetEnvironment(const std::string& name)
 {
     ::_wputenv_s(win32::widen(name).c_str(), L"");
     ::SetEnvironmentVariableW(win32::widen(name).c_str(), nullptr);
+}
+
+std::optional<std::string> getEnvironment(const std::string& name)
+{
+    // The system's copy: _wputenv_s drops a variable set to "" (getenv then reports it absent), and the system's copy is the one
+    // CreateProcessW passes on.
+    const std::wstring wide = win32::widen(name);
+    std::wstring value(256, L'\0');
+    for (;;) {
+        ::SetLastError(0);
+        const DWORD n = ::GetEnvironmentVariableW(wide.c_str(), value.data(), static_cast<DWORD>(value.size()));
+        if (n == 0) {
+            if (::GetLastError() == ERROR_ENVVAR_NOT_FOUND) return std::nullopt;
+            return std::string{};
+        }
+        // A buffer that is too small gets back the size the value needs, terminating null included.
+        if (n >= value.size()) {
+            value.resize(n);
+            continue;
+        }
+        return win32::narrow(std::wstring_view(value.data(), n));
+    }
 }
 
 }  // namespace sub0platform

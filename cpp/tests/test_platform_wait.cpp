@@ -179,7 +179,7 @@ int main()
         setEnvironment("S0Q_TEST_INHERITED", "yes");
         std::vector<std::string> env{"S0Q_TEST_GIVEN=given"};
         for (const char* key : {"SYSTEMROOT", "PATH"})
-            if (const char* v = std::getenv(key)) env.push_back(std::string{key} + "=" + v);
+            if (const auto v = getEnvironment(key)) env.push_back(std::string{key} + "=" + *v);
         auto given = spawn(ProcessSpec{.argv = {kChild, "env", "S0Q_TEST_GIVEN"}, .environment = env, .pipeOutput = true});
         auto inherited = spawn(ProcessSpec{.argv = {kChild, "env", "S0Q_TEST_INHERITED"}, .environment = env, .pipeOutput = true});
         CHECK(given.has_value() && inherited.has_value());

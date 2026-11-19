@@ -5,7 +5,6 @@
 #include "sub0platform/process.hpp"
 
 #include <algorithm>
-#include <cstdlib>
 #include <fstream>
 #include <thread>
 
@@ -68,7 +67,21 @@ int main()
         auto r = runCaptured(ProcessSpec{.argv = {SUB0PLATFORM_CHILD, "env", "SUB0PLATFORM_PROC_TEST"}});
         CHECK(r.has_value() && r->output == "yes");
         unsetEnvironment("SUB0PLATFORM_PROC_TEST");
-        CHECK(std::getenv("SUB0PLATFORM_PROC_TEST") == nullptr);
+        CHECK(!getEnvironment("SUB0PLATFORM_PROC_TEST").has_value());
+    }
+    {   // getEnvironment reads what setEnvironment and unsetEnvironment leave: a value, an empty value (present, not absent), and nothing once unset
+        const std::string name = "SUB0PLATFORM_PROC_GET";
+        unsetEnvironment(name);
+        CHECK(!getEnvironment(name).has_value());
+        setEnvironment(name, "value");
+        CHECK(getEnvironment(name) == std::optional<std::string>{"value"});
+        setEnvironment(name, "");
+        CHECK(getEnvironment(name) == std::optional<std::string>{""});
+        const std::string longValue(1000, 'v');   // longer than the first buffer the Windows read tries
+        setEnvironment(name, longValue);
+        CHECK(getEnvironment(name) == std::optional<std::string>{longValue});
+        unsetEnvironment(name);
+        CHECK(!getEnvironment(name).has_value());
     }
     return finish();
 }

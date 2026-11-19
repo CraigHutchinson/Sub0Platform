@@ -75,6 +75,9 @@ void setProcessName(const std::string& name);
 /// Set or remove a variable in this process's environment (inherited by children started afterwards).
 void setEnvironment(const std::string& name, const std::string& value);
 void unsetEnvironment(const std::string& name);
+/// The value of a variable in this process's environment: nullopt when it is not set, "" when it is set and empty. Windows: the value is UTF-8
+/// (what setEnvironment takes), read from the system's copy, which keeps an empty value; the C runtime's copy drops it.
+[[nodiscard]] std::optional<std::string> getEnvironment(const std::string& name);
 
 /// The fields of /proc/PID/stat this module uses.
 struct ProcStat

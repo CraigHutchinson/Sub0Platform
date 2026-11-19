@@ -15,6 +15,7 @@
 //   event VAR TEXT         TEXT and a line break to the inherited event pipe the variable VAR names
 //   stoppable MS           watch for stop requests, say "ready", then exit 0 on a request ("stopped" to stdout) or 1 after MS milliseconds
 #include "sub0platform/process.hpp"
+#include "sub0platform/proc.hpp"
 #include "sub0platform/wait.hpp"
 
 #include <chrono>
@@ -103,7 +104,7 @@ int main(int argc, char** argv)
     if (mode == "say" && argc == 4) { put(stdout, std::string(argv[2]) + "\n"); sleepMs(argv[3]); return 0; }
     if (mode == "sleep" && argc == 3) { sleepMs(argv[2]); return 0; }
     if (mode == "pwd") { put(stdout, fs::current_path().string()); return 0; }
-    if (mode == "env" && argc == 3) { const char* v = std::getenv(argv[2]); put(stdout, v ? v : ""); return 0; }
+    if (mode == "env" && argc == 3) { put(stdout, sub0platform::getEnvironment(argv[2]).value_or("")); return 0; }
     if (mode == "held" && argc == 4) { put(stdout, heldOpen(argv[2], argv[3]) ? "leaked" : "closed"); return 0; }
     if (mode == "tree" && argc == 4) {
         auto c = sub0platform::spawn(sub0platform::ProcessSpec{.argv = {argv[3], "sleep", "30000"}});
@@ -116,8 +117,9 @@ int main(int argc, char** argv)
         return 0;
     }
     if (mode == "event" && argc == 4) {
-        const char* v = std::getenv(argv[2]);
-        if (!v) return 72;
+        const auto found = sub0platform::getEnvironment(argv[2]);
+        if (!found) return 72;
+        const char* v = found->c_str();
         return sub0platform::writeToInherited(v, std::string(argv[3]) + "\n") ? 0 : 73;
     }
     if (mode == "stoppable" && argc == 3) {
