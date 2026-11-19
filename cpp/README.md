@@ -77,7 +77,7 @@ Six test programs, registered with CTest, and the helper program `platform_child
 * `SUB0PLATFORM_TEST_TMP` names the root of the tests' temporary directories. Default: `test-tmp` in the build directory.
 * On Windows keep that root short and outside `AppData`. `test_platform_net` makes a path longer than 107 bytes, which must fit in
   `MAX_PATH`, and AF_UNIX connect fails under the user's AppData directories on the build host. Long socket paths fall back to
-  `%USERPROFILE%\.sub0squad\sockets`, which the tests create.
+  `%USERPROFILE%\.sub0platform\sockets`, which the tests create.
 * On WSL keep the root off `/mnt/`: DrvFs has neither POSIX file modes nor Unix sockets, and two tests need both.
 
 Open decisions: whether the library keeps C++23 as its floor, which MSVC toolchains to support (only MinGW is built here), and whether

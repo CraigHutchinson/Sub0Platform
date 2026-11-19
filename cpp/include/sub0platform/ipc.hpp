@@ -21,7 +21,7 @@ struct LocalConnectError
 
 /// The file the socket named `path` really has. POSIX: `path` itself, at any length. Windows: `path` while it fits sockaddr_un (107 bytes of
 /// UTF-8); a longer one (a deep worktree, a test home under a long temp directory) maps to a short stable name, a hash of the full path, under
-/// %USERPROFILE%\.sub0squad\sockets (the user's temp directory when that is unset), so a daemon and its clients agree on it. An error when even
+/// %USERPROFILE%\.sub0platform\sockets (the user's temp directory when that is unset), so a daemon and its clients agree on it. An error when even
 /// that name is too long.
 [[nodiscard]] std::expected<std::filesystem::path, PlatformError> localSocketFile(const std::filesystem::path& path);
 
@@ -29,7 +29,7 @@ struct LocalConnectError
 /// lock. Nothing there is not an error.
 void removeLocal(const std::filesystem::path& path);
 
-/// Remove moved socket names (Windows: under %USERPROFILE%\.sub0squad\sockets) that nobody listens on any more: left by a daemon that was
+/// Remove moved socket names (Windows: under %USERPROFILE%\.sub0platform\sockets) that nobody listens on any more: left by a daemon that was
 /// killed. A name younger than `minAge` is left alone, as its daemon may be between bind and listen. POSIX moves no names: nothing to do.
 /// Returns how many went.
 int clearStaleLocalSockets(std::chrono::seconds minAge = std::chrono::minutes(1));

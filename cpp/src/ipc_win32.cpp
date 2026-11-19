@@ -31,15 +31,15 @@ std::uint64_t hashOf(const std::wstring& path)
     return h;
 }
 
-/// The directory for moved socket names: %USERPROFILE%\.sub0squad\sockets (owner-only, and the same path in every shell; AppData is not used, as a
+/// The directory for moved socket names: %USERPROFILE%\.sub0platform\sockets (owner-only, and the same path in every shell; AppData is not used, as a
 /// packaged app sees a virtualized copy of it where AF_UNIX fails with WSAEINVAL), else the user's temp directory.
 std::filesystem::path fallbackDir()
 {
     wchar_t buf[MAX_PATH + 1];
     const DWORD n = ::GetEnvironmentVariableW(L"USERPROFILE", buf, MAX_PATH + 1);
-    if (n > 0 && n <= MAX_PATH) return std::filesystem::path(std::wstring(buf, n)) / L".sub0squad" / L"sockets";
+    if (n > 0 && n <= MAX_PATH) return std::filesystem::path(std::wstring(buf, n)) / L".sub0platform" / L"sockets";
     const DWORD t = ::GetTempPathW(MAX_PATH + 1, buf);
-    return std::filesystem::path(std::wstring(buf, t)) / L"sub0squad-sockets";
+    return std::filesystem::path(std::wstring(buf, t)) / L"sub0platform-sockets";
 }
 
 /// The address of a socket file whose name localSocketFile has already checked fits.
