@@ -14,7 +14,7 @@ namespace fs = std::filesystem;
 
 int main()
 {
-    {   // /proc/PID/stat: the command name may hold spaces and ')' — fields are read after the LAST ')'
+    {   // /proc/PID/stat: the command name may hold spaces and ')' -- fields are read after the LAST ')'
         const std::string text = "4242 (odd ) name) S 17 4242 4242 0 -1 4194560 100 0 0 0 1 2 0 0 20 0 1 0 987654 1000 200 18446744073709551615";
         const auto st = parseProcStat(text);
         CHECK(st.has_value());
