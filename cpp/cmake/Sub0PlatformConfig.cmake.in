@@ -1,0 +1,4 @@
+@PACKAGE_INIT@
+
+include("${CMAKE_CURRENT_LIST_DIR}/Sub0PlatformTargets.cmake")
+check_required_components(Sub0Platform)
