@@ -38,6 +38,9 @@ target_include_directories(sub0platform PUBLIC
   $<INSTALL_INTERFACE:include>)
 target_include_directories(sub0platform PRIVATE src)
 target_compile_options(sub0platform PRIVATE ${SUB0PLATFORM_STRICT})
+# The tests use std::thread, and the library's own sources link the same way as Sub0Squad's (pthread on POSIX).
+find_package(Threads REQUIRED)
+target_link_libraries(sub0platform PUBLIC Threads::Threads)
 if(WIN32)
   # The Windows backends split command lines with CommandLineToArgvW (shell32), use Winsock (ws2_32) and name the user (advapi32).
   target_link_libraries(sub0platform PUBLIC shell32 ws2_32 advapi32)
