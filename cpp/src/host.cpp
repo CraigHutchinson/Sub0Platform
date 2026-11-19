@@ -1,12 +1,12 @@
-// platform_host.hpp, the part every operating system shares: the pure parsers of /proc text (tested on fixed input everywhere).
-#include "sub0squad/platform_host.hpp"
+// host.hpp, the part every operating system shares: the pure parsers of /proc text (tested on fixed input everywhere).
+#include "sub0platform/host.hpp"
 
 #include <cstdlib>
 #include <map>
 #include <sstream>
 #include <string>
 
-namespace sub0squad::platform {
+namespace sub0platform {
 
 MemoryFacts parseMeminfo(std::string_view text)
 {
@@ -33,4 +33,4 @@ std::optional<CpuTimes> parseCpuTimes(std::string_view text)
     return CpuTimes{.busy = total - idle - iowait, .total = total};
 }
 
-}  // namespace sub0squad::platform
+}  // namespace sub0platform

@@ -1,8 +1,8 @@
-// POSIX backend of platform_net.hpp: BSD sockets, non-blocking and close-on-exec, waited on with poll; MSG_NOSIGNAL so a gone peer is an error
+// POSIX backend of net.hpp: BSD sockets, non-blocking and close-on-exec, waited on with poll; MSG_NOSIGNAL so a gone peer is an error
 // and never a SIGPIPE.
-#include "sub0squad/platform_net.hpp"
-#include "platform_posix_util.hpp"
-#include "platform_util.hpp"
+#include "sub0platform/net.hpp"
+#include "posix_util.hpp"
+#include "util.hpp"
 
 #include <arpa/inet.h>
 #include <fcntl.h>
@@ -18,7 +18,7 @@
 #include <cstring>
 #include <vector>
 
-namespace sub0squad::platform {
+namespace sub0platform {
 
 namespace {
 
@@ -209,4 +209,4 @@ std::optional<std::size_t> waitForConnection(std::span<const SocketListener* con
 
 bool loopbackPortInUse(std::uint16_t port) { return connectTcp("127.0.0.1", port).has_value(); }
 
-}  // namespace sub0squad::platform
+}  // namespace sub0platform

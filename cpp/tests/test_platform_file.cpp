@@ -1,7 +1,7 @@
-// Files (platform_file.hpp, docs/PLATFORM.md): whole reads and writes in binary mode, atomic replacement, appends with permissions, sync and
+// Files (file.hpp): whole reads and writes in binary mode, atomic replacement, appends with permissions, sync and
 // truncate, modification times, and whole writes and reads on a descriptor.
-#include "check.hpp"
-#include "sub0squad/platform_file.hpp"
+#include "sub0platform/testing/check.hpp"
+#include "sub0platform/file.hpp"
 
 #if defined(_WIN32)
 #include <fcntl.h>
@@ -12,7 +12,7 @@
 
 #include <string>
 
-using namespace sub0squad::platform;
+using namespace sub0platform;
 namespace fs = std::filesystem;
 
 int main()

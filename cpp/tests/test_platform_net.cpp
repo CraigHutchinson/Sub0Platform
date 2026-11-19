@@ -1,14 +1,14 @@
-// Sockets and the instance lock (platform_net.hpp, platform_ipc.hpp, platform_file.hpp FileLock; docs/PLATFORM.md): a loopback round trip, reads
+// Sockets and the instance lock (net.hpp, ipc.hpp, file.hpp FileLock): a loopback round trip, reads
 // and accepts that wait with a deadline, the end of a stream, waiting on two listeners, a port already held, the local control socket with "no
 // server" told apart, the peer's user, and a lock that a second taker cannot get. Everything runs inside this process on ephemeral ports.
-#include "check.hpp"
-#include "sub0squad/platform_file.hpp"
-#include "sub0squad/platform_ipc.hpp"
-#include "sub0squad/platform_net.hpp"
+#include "sub0platform/testing/check.hpp"
+#include "sub0platform/file.hpp"
+#include "sub0platform/ipc.hpp"
+#include "sub0platform/net.hpp"
 
 #include <string>
 
-using namespace sub0squad::platform;
+using namespace sub0platform;
 using namespace std::chrono_literals;
 
 namespace {
@@ -123,7 +123,7 @@ int main()
                 }
             }
         }
-        if (file && *file != path) CHECK(sub0squad::platform::removeTree(*file).has_value());   // the moved name is outside `dir`
+        if (file && *file != path) CHECK(sub0platform::removeTree(*file).has_value());   // the moved name is outside `dir`
     }
     {   // the instance lock: the first taker has it, a second does not, and it is free again once released
         const auto path = dir / "instance.lock";
@@ -138,8 +138,8 @@ int main()
     }
     {   // the tree still holds the local socket's file: removing it opens no file (std::filesystem::remove_all blocked on one for ever on
         // Windows Server 2022), and a tree that is already gone is success
-        CHECK(sub0squad::platform::removeTree(dir).has_value() && !std::filesystem::exists(dir));
-        CHECK(sub0squad::platform::removeTree(dir).has_value());
+        CHECK(sub0platform::removeTree(dir).has_value() && !std::filesystem::exists(dir));
+        CHECK(sub0platform::removeTree(dir).has_value());
     }
     return finish();
 }

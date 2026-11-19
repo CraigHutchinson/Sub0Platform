@@ -1,9 +1,9 @@
 #pragma once
-/// @file platform_posix_util.hpp
-/// Private to the POSIX backends of the platform library (docs/PLATFORM.md): the error from errno, and how a waited-for child ended.
+/// @file posix_util.hpp
+/// Private to the POSIX backends of the platform library: the error from errno, and how a waited-for child ended.
 
-#include "sub0squad/platform_error.hpp"
-#include "sub0squad/platform_process.hpp"
+#include "sub0platform/error.hpp"
+#include "sub0platform/process.hpp"
 
 #include <sys/wait.h>
 
@@ -11,7 +11,7 @@
 #include <cstring>
 #include <string>
 
-namespace sub0squad::platform::posix {
+namespace sub0platform::posix {
 
 /// A PlatformError for `operation` from errno (or `code`): "cannot <operation>: <the system's reason>".
 [[nodiscard]] inline PlatformError sysError(std::string operation, int code = errno)
@@ -29,4 +29,4 @@ namespace sub0squad::platform::posix {
     return s;
 }
 
-}  // namespace sub0squad::platform::posix
+}  // namespace sub0platform::posix

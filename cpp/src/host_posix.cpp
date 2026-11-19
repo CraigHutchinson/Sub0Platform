@@ -1,5 +1,5 @@
-// POSIX (Linux) backend of platform_host.hpp: /proc/meminfo, /proc/stat, /proc/loadavg, statvfs and /sys/class/drm. The parsers are in platform_host.cpp.
-#include "sub0squad/platform_host.hpp"
+// POSIX (Linux) backend of host.hpp: /proc/meminfo, /proc/stat, /proc/loadavg, statvfs and /sys/class/drm. The parsers are in host.cpp.
+#include "sub0platform/host.hpp"
 
 #include <sys/statvfs.h>
 
@@ -10,7 +10,7 @@
 #include <sstream>
 #include <string>
 
-namespace sub0squad::platform {
+namespace sub0platform {
 
 namespace fs = std::filesystem;
 
@@ -71,4 +71,4 @@ std::optional<GpuFacts> gpu()
     return std::nullopt;
 }
 
-}  // namespace sub0squad::platform
+}  // namespace sub0platform

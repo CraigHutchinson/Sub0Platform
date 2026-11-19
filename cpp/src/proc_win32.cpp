@@ -1,8 +1,8 @@
-// Windows backend of platform_proc.hpp: process handles for identity, a Toolhelp32 snapshot for the tree, the process's own command line (read
+// Windows backend of proc.hpp: process handles for identity, a Toolhelp32 snapshot for the tree, the process's own command line (read
 // through ntdll, which every process has loaded) for its arguments. The parsers of /proc text are in platform_proc.cpp.
-#include "sub0squad/platform_proc.hpp"
+#include "sub0platform/proc.hpp"
 
-#include "platform_win32_util.hpp"
+#include "win32_util.hpp"
 
 #include <fcntl.h>
 #include <io.h>
@@ -16,7 +16,7 @@
 #include <map>
 #include <set>
 
-namespace sub0squad::platform {
+namespace sub0platform {
 
 namespace {
 
@@ -176,7 +176,7 @@ bool killProcess(ProcessId id)
     return h.valid() && ::TerminateProcess(h.get(), 128 + 9);
 }
 
-void becomeSubreaper() {}      // a job object holds a tree on Windows (platform_process: a new session gets one)
+void becomeSubreaper() {}      // a job object holds a tree on Windows (process.hpp: a new session gets one)
 void useBinaryStandardStreams()
 {
     for (FILE* f : {stdin, stdout, stderr}) (void)::_setmode(::_fileno(f), _O_BINARY);
@@ -264,4 +264,4 @@ void unsetEnvironment(const std::string& name)
     ::SetEnvironmentVariableW(win32::widen(name).c_str(), nullptr);
 }
 
-}  // namespace sub0squad::platform
+}  // namespace sub0platform

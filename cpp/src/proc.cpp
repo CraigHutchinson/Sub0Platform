@@ -1,9 +1,9 @@
-// platform_proc.hpp, the part every operating system shares: the pure parsers of /proc text (tested on fixed input everywhere).
-#include "sub0squad/platform_proc.hpp"
+// proc.hpp, the part every operating system shares: the pure parsers of /proc text (tested on fixed input everywhere).
+#include "sub0platform/proc.hpp"
 
 #include <sstream>
 
-namespace sub0squad::platform {
+namespace sub0platform {
 
 std::optional<ProcStat> parseProcStat(std::string_view text)
 {
@@ -33,4 +33,4 @@ std::vector<std::string> parseCmdline(std::string_view text)
     return args;
 }
 
-}  // namespace sub0squad::platform
+}  // namespace sub0platform

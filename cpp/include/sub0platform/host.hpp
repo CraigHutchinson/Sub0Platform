@@ -1,6 +1,6 @@
 #pragma once
-/// @file platform_host.hpp
-/// Facts about the host (docs/PLATFORM.md, module platform_host): memory, processor time, load, free disk and the first GPU. The POSIX backend
+/// @file host.hpp
+/// Facts about the host: memory, processor time, load, free disk and the first GPU. The POSIX backend
 /// reads /proc, statvfs and /sys/class/drm; the parsers are pure so they are tested on fixed text.
 
 #include <cstdint>
@@ -8,7 +8,7 @@
 #include <optional>
 #include <string_view>
 
-namespace sub0squad::platform {
+namespace sub0platform {
 
 /// Memory in MiB. `availableMiB` is what a new process can be given without swapping (page cache counts as available).
 struct MemoryFacts
@@ -51,4 +51,4 @@ struct GpuFacts
 /// Parse the first ("cpu") line of /proc/stat; busy is everything except idle and iowait.
 [[nodiscard]] std::optional<CpuTimes> parseCpuTimes(std::string_view text);
 
-}  // namespace sub0squad::platform
+}  // namespace sub0platform

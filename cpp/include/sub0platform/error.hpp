@@ -1,11 +1,11 @@
 #pragma once
-/// @file platform_error.hpp
-/// The one error type of the platform library (docs/PLATFORM.md): what was attempted, on what, and why it failed, so no caller reads errno or a
+/// @file error.hpp
+/// The one error type of the platform library: what was attempted, on what, and why it failed, so no caller reads errno or a
 /// Windows error code itself.
 
 #include <string>
 
-namespace sub0squad::platform {
+namespace sub0platform {
 
 /// A failed operating-system operation.
 struct PlatformError
@@ -18,4 +18,4 @@ struct PlatformError
     [[nodiscard]] const std::string& what() const { return message; }
 };
 
-}  // namespace sub0squad::platform
+}  // namespace sub0platform

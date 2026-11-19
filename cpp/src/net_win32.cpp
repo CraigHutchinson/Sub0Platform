@@ -1,14 +1,14 @@
-// Windows backend of platform_net.hpp: Winsock 2, sockets non-blocking and not inherited, waited on with WSAPoll. Windows raises no SIGPIPE.
+// Windows backend of net.hpp: Winsock 2, sockets non-blocking and not inherited, waited on with WSAPoll. Windows raises no SIGPIPE.
 // A listener uses SO_EXCLUSIVEADDRUSE, so a port another listener holds is refused here as on POSIX (plain SO_REUSEADDR would let two share it).
-#include "sub0squad/platform_net.hpp"
+#include "sub0platform/net.hpp"
 
-#include "platform_win32_util.hpp"
-#include "platform_util.hpp"
+#include "win32_util.hpp"
+#include "util.hpp"
 
 #include <algorithm>
 #include <vector>
 
-namespace sub0squad::platform {
+namespace sub0platform {
 
 namespace {
 
@@ -200,4 +200,4 @@ std::optional<std::size_t> waitForConnection(std::span<const SocketListener* con
 
 bool loopbackPortInUse(std::uint16_t port) { return connectTcp("127.0.0.1", port).has_value(); }
 
-}  // namespace sub0squad::platform
+}  // namespace sub0platform

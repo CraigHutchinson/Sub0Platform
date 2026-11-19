@@ -1,23 +1,23 @@
-// Waiting for several things at once (platform_wait.hpp; docs/PLATFORM.md) and the process pieces the shim stands on (platform_process.hpp): a
+// Waiting for several things at once (wait.hpp) and the process pieces a launcher stands on (process.hpp): a
 // timeout, a wake from another thread, a socket that becomes readable and writable, a peer that hangs up, a child's exit with its status, a stop
 // request to this process and to a child (terminateProcess), separate stdout and stderr pipes, the event pipe, and a replaced environment.
-#include "check.hpp"
-#include "sub0squad/platform_net.hpp"
-#include "sub0squad/platform_proc.hpp"
-#include "sub0squad/platform_process.hpp"
-#include "sub0squad/platform_wait.hpp"
+#include "sub0platform/testing/check.hpp"
+#include "sub0platform/net.hpp"
+#include "sub0platform/proc.hpp"
+#include "sub0platform/process.hpp"
+#include "sub0platform/wait.hpp"
 
 #include <algorithm>
 #include <cstdlib>
 #include <string>
 #include <thread>
 
-using namespace sub0squad::platform;
+using namespace sub0platform;
 using namespace std::chrono_literals;
 
 namespace {
 
-const std::string kChild = SUB0SQUAD_PLATFORM_CHILD;
+const std::string kChild = SUB0PLATFORM_CHILD;
 
 /// Read a pipe until every writer closed it or 10 s passed.
 std::string drain(Pipe& p)

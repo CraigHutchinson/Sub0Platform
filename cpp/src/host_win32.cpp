@@ -1,12 +1,12 @@
-// Windows backend of platform_host.hpp: GlobalMemoryStatusEx, GetSystemTimes and std::filesystem::space. No load average and, for now, no GPU
-// figures (the amdgpu sysfs files have no Windows twin; docs/PLATFORM.md). The parsers of /proc text are in platform_host.cpp.
-#include "sub0squad/platform_host.hpp"
+// Windows backend of host.hpp: GlobalMemoryStatusEx, GetSystemTimes and std::filesystem::space. No load average and, for now, no GPU
+// figures (the amdgpu sysfs files have no Windows twin). The parsers of /proc text are in host.cpp.
+#include "sub0platform/host.hpp"
 
-#include "platform_win32_util.hpp"
+#include "win32_util.hpp"
 
 #include <algorithm>
 
-namespace sub0squad::platform {
+namespace sub0platform {
 
 namespace fs = std::filesystem;
 
@@ -59,4 +59,4 @@ std::optional<std::int64_t> freeDiskMiB(const fs::path& path)
 
 std::optional<GpuFacts> gpu() { return std::nullopt; }
 
-}  // namespace sub0squad::platform
+}  // namespace sub0platform

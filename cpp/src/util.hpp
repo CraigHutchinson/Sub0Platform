@@ -1,6 +1,6 @@
 #pragma once
-/// @file platform_util.hpp
-/// Private to the platform library's backends (docs/PLATFORM.md), on every system: a deadline from an optional timeout, the one place that turns
+/// @file util.hpp
+/// Private to the platform library's backends, on every system: a deadline from an optional timeout, the one place that turns
 /// "wait up to this long" into the milliseconds a system wait takes; and the one-call file replace that atomic writes end with.
 
 #include <algorithm>
@@ -9,7 +9,7 @@
 #include <optional>
 #include <system_error>
 
-namespace sub0squad::platform::detail {
+namespace sub0platform::detail {
 
 /// Rename `from` over `to`, replacing an existing file, in one system call: rename(2), or MoveFileExW with MOVEFILE_REPLACE_EXISTING.
 /// std::filesystem::rename does the same on POSIX, but libstdc++ on Windows looks up both paths' status first (two more opens per call).
@@ -43,4 +43,4 @@ private:
     std::optional<Clock::time_point> at_;
 };
 
-}  // namespace sub0squad::platform::detail
+}  // namespace sub0platform::detail

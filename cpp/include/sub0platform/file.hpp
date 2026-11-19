@@ -1,9 +1,9 @@
 #pragma once
-/// @file platform_file.hpp
-/// Files (docs/PLATFORM.md, module platform_file): whole-file reads and writes in binary mode (never a text-mode CRLF), atomic replacement, durable
+/// @file file.hpp
+/// Files: whole-file reads and writes in binary mode (never a text-mode CRLF), atomic replacement, durable
 /// appends for the journal and the ledger, a file's modification time, and whole writes and reads on an inherited descriptor.
 
-#include "sub0squad/platform_error.hpp"
+#include "sub0platform/error.hpp"
 
 #include <cstdint>
 #include <expected>
@@ -12,7 +12,7 @@
 #include <string>
 #include <string_view>
 
-namespace sub0squad::platform {
+namespace sub0platform {
 
 /// The whole file, or nullopt when it cannot be opened.
 [[nodiscard]] std::optional<std::string> readFile(const std::filesystem::path& path);
@@ -93,4 +93,4 @@ private:
 /// Read what is available from an open descriptor into `buffer`, blocking until something is; 0 means the other end closed.
 [[nodiscard]] std::expected<std::size_t, PlatformError> readSome(int descriptor, char* buffer, std::size_t size);
 
-}  // namespace sub0squad::platform
+}  // namespace sub0platform

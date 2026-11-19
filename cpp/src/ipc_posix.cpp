@@ -1,8 +1,8 @@
-// POSIX backend of platform_ipc.hpp: AF_UNIX sockets named relative to a directory descriptor through /proc/self/fd, which keeps
+// POSIX backend of ipc.hpp: AF_UNIX sockets named relative to a directory descriptor through /proc/self/fd, which keeps
 // sockaddr_un's 107-byte limit out of the design; created under umask 0177 (owner-only); the peer checked by SO_PEERCRED.
-#include "sub0squad/platform_ipc.hpp"
+#include "sub0platform/ipc.hpp"
 
-#include "platform_posix_util.hpp"
+#include "posix_util.hpp"
 
 #include <fcntl.h>
 #include <sys/socket.h>
@@ -14,7 +14,7 @@
 #include <cstddef>
 #include <cstring>
 
-namespace sub0squad::platform {
+namespace sub0platform {
 
 namespace {
 
@@ -112,4 +112,4 @@ std::string peerUser(const SocketStream& stream)
     return "uid:" + std::to_string(c ? c->uid : 0);
 }
 
-}  // namespace sub0squad::platform
+}  // namespace sub0platform

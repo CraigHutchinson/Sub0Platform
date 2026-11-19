@@ -1,9 +1,9 @@
 #pragma once
-/// @file platform_process.hpp
-/// Starting and waiting for child processes: the one launcher of the program (docs/PLATFORM.md section 4). Arguments are a vector, never a shell
+/// @file process.hpp
+/// Starting and waiting for child processes: the one launcher of the program. Arguments are a vector, never a shell
 /// string. Every child gets only the standard streams: descriptors the caller holds are never inherited.
 
-#include "sub0squad/platform_error.hpp"
+#include "sub0platform/error.hpp"
 
 #include <chrono>
 #include <cstddef>
@@ -15,7 +15,7 @@
 #include <string_view>
 #include <vector>
 
-namespace sub0squad::platform {
+namespace sub0platform {
 
 /// A process id as the system numbers it (a pid on POSIX), widened so the type is the same on every platform.
 using ProcessId = std::int64_t;
@@ -154,4 +154,4 @@ struct Captured
 /// process the child leaves holding its output keeps this waiting until the timeout.
 [[nodiscard]] std::expected<Captured, PlatformError> runCaptured(const ProcessSpec& spec, const CaptureOptions& options = {});
 
-}  // namespace sub0squad::platform
+}  // namespace sub0platform

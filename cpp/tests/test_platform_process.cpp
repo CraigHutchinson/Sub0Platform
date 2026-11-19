@@ -1,9 +1,9 @@
-// The one launcher (platform_process.hpp, docs/PLATFORM.md): exit codes and signals, capture with and without stderr, the tail kept when the output
+// The one launcher (process.hpp): exit codes and signals, capture with and without stderr, the tail kept when the output
 // is long, timeouts, a missing program, the working directory, output files, group kill and no leaked descriptors. Children are tests/platform_child.cpp,
 // the same program on every system.
-#include "check.hpp"
-#include "sub0squad/platform_proc.hpp"
-#include "sub0squad/platform_process.hpp"
+#include "sub0platform/testing/check.hpp"
+#include "sub0platform/proc.hpp"
+#include "sub0platform/process.hpp"
 
 #include <fcntl.h>
 #if defined(_WIN32)
@@ -15,12 +15,12 @@
 #include <fstream>
 #include <sstream>
 
-using namespace sub0squad::platform;
+using namespace sub0platform;
 using namespace std::chrono_literals;
 namespace fs = std::filesystem;
 
 namespace {
-const std::string kChild = SUB0SQUAD_PLATFORM_CHILD;
+const std::string kChild = SUB0PLATFORM_CHILD;
 constexpr int kKill = 9;   // SIGKILL; Windows has no such constant, but Child::kill reports the same signal there
 #if defined(_WIN32)
 constexpr int kCrash = 11;   // an access violation is reported as SIGSEGV

@@ -14,8 +14,8 @@
 //   tree PIDFILE SELF      start SELF sleep 30000 (a grandchild), write its id to PIDFILE, wait for it
 //   event VAR TEXT         TEXT and a line break to the inherited event pipe the variable VAR names
 //   stoppable MS           watch for stop requests, say "ready", then exit 0 on a request ("stopped" to stdout) or 1 after MS milliseconds
-#include "sub0squad/platform_process.hpp"
-#include "sub0squad/platform_wait.hpp"
+#include "sub0platform/process.hpp"
+#include "sub0platform/wait.hpp"
 
 #include <chrono>
 #include <csignal>
@@ -106,7 +106,7 @@ int main(int argc, char** argv)
     if (mode == "env" && argc == 3) { const char* v = std::getenv(argv[2]); put(stdout, v ? v : ""); return 0; }
     if (mode == "held" && argc == 4) { put(stdout, heldOpen(argv[2], argv[3]) ? "leaked" : "closed"); return 0; }
     if (mode == "tree" && argc == 4) {
-        auto c = sub0squad::platform::spawn(sub0squad::platform::ProcessSpec{.argv = {argv[3], "sleep", "30000"}});
+        auto c = sub0platform::spawn(sub0platform::ProcessSpec{.argv = {argv[3], "sleep", "30000"}});
         if (!c) { put(stderr, c.error().message + "\n"); return 71; }
         {
             std::ofstream(fs::path(argv[2]).concat(".part"), std::ios::binary) << c->id();
@@ -118,14 +118,14 @@ int main(int argc, char** argv)
     if (mode == "event" && argc == 4) {
         const char* v = std::getenv(argv[2]);
         if (!v) return 72;
-        return sub0squad::platform::writeToInherited(v, std::string(argv[3]) + "\n") ? 0 : 73;
+        return sub0platform::writeToInherited(v, std::string(argv[3]) + "\n") ? 0 : 73;
     }
     if (mode == "stoppable" && argc == 3) {
-        auto w = sub0squad::platform::Waiter::create();
+        auto w = sub0platform::Waiter::create();
         if (!w || !w->watchStopRequests(7)) return 74;
         put(stdout, "ready\n");
         auto events = w->wait(std::chrono::milliseconds(std::atoll(argv[2])));
-        if (events && !events->empty() && events->front().kind == sub0squad::platform::WaitEvent::Kind::stopRequested && events->front().tag == 7) {
+        if (events && !events->empty() && events->front().kind == sub0platform::WaitEvent::Kind::stopRequested && events->front().tag == 7) {
             put(stdout, "stopped\n");
             return 0;
         }

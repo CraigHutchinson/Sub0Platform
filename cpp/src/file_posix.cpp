@@ -1,8 +1,8 @@
-// POSIX backend of platform_file.hpp: open/write/fdatasync/ftruncate for appends and descriptors, stat for the modification time. The whole-file
+// POSIX backend of file.hpp: open/write/fdatasync/ftruncate for appends and descriptors, stat for the modification time. The whole-file
 // functions are in platform_file.cpp.
-#include "sub0squad/platform_file.hpp"
+#include "sub0platform/file.hpp"
 
-#include "platform_util.hpp"
+#include "util.hpp"
 
 #include <fcntl.h>
 #include <sys/file.h>
@@ -13,7 +13,7 @@
 #include <cstdio>
 #include <cstring>
 
-namespace sub0squad::platform {
+namespace sub0platform {
 
 namespace fs = std::filesystem;
 
@@ -145,4 +145,4 @@ std::error_code detail::replaceFile(const fs::path& from, const fs::path& to)
     return {errno, std::generic_category()};
 }
 
-}  // namespace sub0squad::platform
+}  // namespace sub0platform

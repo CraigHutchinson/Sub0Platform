@@ -1,5 +1,5 @@
-// POSIX (Linux) backend of platform_proc.hpp: /proc for identity and the tree, readlink for the program's path. The parsers are in platform_proc.cpp.
-#include "sub0squad/platform_proc.hpp"
+// POSIX (Linux) backend of proc.hpp: /proc for identity and the tree, readlink for the program's path. The parsers are in platform_proc.cpp.
+#include "sub0platform/proc.hpp"
 
 #include <dirent.h>
 #include <signal.h>
@@ -12,7 +12,7 @@
 #include <map>
 #include <sstream>
 
-namespace sub0squad::platform {
+namespace sub0platform {
 
 namespace {
 
@@ -163,4 +163,4 @@ std::filesystem::path findOnPath(const std::string& name)
 void setEnvironment(const std::string& name, const std::string& value) { ::setenv(name.c_str(), value.c_str(), 1); }
 void unsetEnvironment(const std::string& name) { ::unsetenv(name.c_str()); }
 
-}  // namespace sub0squad::platform
+}  // namespace sub0platform

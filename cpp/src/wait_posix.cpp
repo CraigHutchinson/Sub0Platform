@@ -1,9 +1,9 @@
-// POSIX backend of platform_wait.hpp: one epoll set holding the watched sockets, a pidfd per watched process, an eventfd for wake() and a
+// POSIX backend of wait.hpp: one epoll set holding the watched sockets, a pidfd per watched process, an eventfd for wake() and a
 // signalfd for SIGTERM and SIGINT (blocked in the calling thread, and in every thread it starts afterwards).
-#include "sub0squad/platform_wait.hpp"
+#include "sub0platform/wait.hpp"
 
-#include "platform_posix_util.hpp"
-#include "platform_util.hpp"
+#include "posix_util.hpp"
+#include "util.hpp"
 
 #include <signal.h>
 #include <sys/epoll.h>
@@ -18,7 +18,7 @@
 #include <cstring>
 #include <map>
 
-namespace sub0squad::platform {
+namespace sub0platform {
 
 namespace {
 
@@ -163,4 +163,4 @@ std::expected<std::vector<WaitEvent>, PlatformError> Waiter::wait(std::optional<
     return out;
 }
 
-}  // namespace sub0squad::platform
+}  // namespace sub0platform

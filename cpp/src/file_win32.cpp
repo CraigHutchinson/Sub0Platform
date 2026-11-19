@@ -1,9 +1,9 @@
-// Windows backend of platform_file.hpp: the C runtime's descriptors (_wopen in binary, append and no-inherit mode, _write, _commit, _chsize_s)
+// Windows backend of file.hpp: the C runtime's descriptors (_wopen in binary, append and no-inherit mode, _write, _commit, _chsize_s)
 // for appends and descriptors, GetFileAttributesExW for the modification time. The whole-file functions are in platform_file.cpp.
-#include "sub0squad/platform_file.hpp"
+#include "sub0platform/file.hpp"
 
-#include "platform_util.hpp"
-#include "platform_win32_util.hpp"
+#include "util.hpp"
+#include "win32_util.hpp"
 
 #include <fcntl.h>
 #include <io.h>
@@ -15,7 +15,7 @@
 #include <climits>
 #include <cstring>
 
-namespace sub0squad::platform {
+namespace sub0platform {
 
 namespace fs = std::filesystem;
 
@@ -184,4 +184,4 @@ std::error_code detail::replaceFile(const fs::path& from, const fs::path& to)
     return {static_cast<int>(::GetLastError()), std::system_category()};
 }
 
-}  // namespace sub0squad::platform
+}  // namespace sub0platform

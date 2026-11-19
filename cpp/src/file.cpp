@@ -1,15 +1,15 @@
-// platform_file.hpp, the part every operating system shares: whole files through std::fstream in binary mode, atomic replacement by rename,
+// file.hpp, the part every operating system shares: whole files through std::fstream in binary mode, atomic replacement by rename,
 // and the one-record append. The descriptors, appends and modification time are in platform_file_posix.cpp and platform_file_win32.cpp.
-#include "sub0squad/platform_file.hpp"
+#include "sub0platform/file.hpp"
 
-#include "platform_util.hpp"
+#include "util.hpp"
 
 #include <cerrno>
 #include <cstring>
 #include <fstream>
 #include <sstream>
 
-namespace sub0squad::platform {
+namespace sub0platform {
 
 namespace fs = std::filesystem;
 
@@ -74,4 +74,4 @@ std::expected<void, PlatformError> appendToFile(const fs::path& path, std::strin
     return f->append(data);
 }
 
-}  // namespace sub0squad::platform
+}  // namespace sub0platform

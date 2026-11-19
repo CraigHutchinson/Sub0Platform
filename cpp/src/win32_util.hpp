@@ -1,6 +1,6 @@
 #pragma once
-/// @file platform_win32_util.hpp
-/// Private to the Windows backends of the platform library (docs/PLATFORM.md): UTF-8 and UTF-16 conversion, the system's error text, and a
+/// @file win32_util.hpp
+/// Private to the Windows backends of the platform library: UTF-8 and UTF-16 conversion, the system's error text, and a
 /// handle that closes itself. Strings cross the platform interface as UTF-8; paths are std::filesystem::path, which is wide on Windows.
 
 #ifndef WIN32_LEAN_AND_MEAN
@@ -13,14 +13,14 @@
 #include <ws2tcpip.h>
 #include <windows.h>
 
-#include "sub0squad/platform_error.hpp"
-#include "sub0squad/platform_process.hpp"
+#include "sub0platform/error.hpp"
+#include "sub0platform/process.hpp"
 
 #include <cstdint>
 #include <string>
 #include <string_view>
 
-namespace sub0squad::platform::win32 {
+namespace sub0platform::win32 {
 
 /// UTF-8 to UTF-16 (invalid sequences become U+FFFD).
 [[nodiscard]] inline std::wstring widen(std::string_view s)
@@ -113,7 +113,7 @@ private:
 [[nodiscard]] inline std::uint64_t ticks(const FILETIME& t) { return (static_cast<std::uint64_t>(t.dwHighDateTime) << 32) | t.dwLowDateTime; }
 
 /// The name of the event a process that watches for stop requests (platform_wait) creates, and terminateProcess sets: Windows has no SIGTERM.
-[[nodiscard]] inline std::wstring stopEventName(std::int64_t pid) { return L"Local\\sub0squad-stop-" + std::to_wstring(pid); }
+[[nodiscard]] inline std::wstring stopEventName(std::int64_t pid) { return L"Local\\sub0platform-stop-" + std::to_wstring(pid); }
 
 /// How a process ended, from its exit code: a crash status of the system becomes the nearest signal, so callers that classify crashes keep working.
 [[nodiscard]] inline ExitStatus exitStatusOf(DWORD code)
@@ -127,4 +127,4 @@ private:
     }
 }
 
-}  // namespace sub0squad::platform::win32
+}  // namespace sub0platform::win32

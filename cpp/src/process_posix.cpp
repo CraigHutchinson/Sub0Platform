@@ -1,10 +1,10 @@
-// The POSIX implementation of platform_process.hpp: posix_spawnp for every child (glibc reports a failed exec as the spawn's own error), a pipe
-// and poll for capture, waitpid for the end. A Win32 sibling (CreateProcessW and a Job object per group) is the plan in docs/PLATFORM.md.
-#include "sub0squad/platform_process.hpp"
-#include "sub0squad/platform_file.hpp"
+// The POSIX implementation of process.hpp: posix_spawnp for every child (glibc reports a failed exec as the spawn's own error), a pipe
+// and poll for capture, waitpid for the end. The Win32 sibling is process_win32.cpp (CreateProcessW and a Job object per group).
+#include "sub0platform/process.hpp"
+#include "sub0platform/file.hpp"
 
-#include "platform_posix_util.hpp"
-#include "platform_util.hpp"
+#include "posix_util.hpp"
+#include "util.hpp"
 
 #include <fcntl.h>
 #include <poll.h>
@@ -21,7 +21,7 @@
 
 extern char** environ;
 
-namespace sub0squad::platform {
+namespace sub0platform {
 
 namespace {
 
@@ -96,7 +96,7 @@ std::expected<Child, PlatformError> start(const ProcessSpec& spec, int captureFd
     if (eventPipe.write >= 0) posix_spawn_file_actions_adddup2(&s.actions, eventPipe.write, 3);
     posix_spawn_file_actions_addclosefrom_np(&s.actions, eventPipe.write >= 0 ? 4 : 3);
 
-    // A clean start: no blocked signals (the daemon blocks some for its own loop) and default SIGPIPE (an ignored one survives exec).
+    // A clean start: no blocked signals (a caller may block some for its own loop) and default SIGPIPE (an ignored one survives exec).
     sigset_t none, defaults;
     sigemptyset(&none);
     sigemptyset(&defaults);
@@ -309,4 +309,4 @@ std::expected<Captured, PlatformError> runCaptured(const ProcessSpec& spec, cons
     return c;
 }
 
-}  // namespace sub0squad::platform
+}  // namespace sub0platform

@@ -1,10 +1,10 @@
 #pragma once
-/// @file platform_net.hpp
-/// Sockets (docs/PLATFORM.md, module platform_net): a connected stream and a listener, both move-only and closing themselves, and the TCP ways to
-/// make them (a client to host:port, a listener on loopback). The local control socket (platform_ipc.hpp) makes the same two types. Every read and
+/// @file net.hpp
+/// Sockets: a connected stream and a listener, both move-only and closing themselves, and the TCP ways to
+/// make them (a client to host:port, a listener on loopback). The local control socket (ipc.hpp) makes the same two types. Every read and
 /// accept can wait with a deadline; writes never raise SIGPIPE. Sockets are non-blocking underneath and never inherited by a child.
 
-#include "sub0squad/platform_error.hpp"
+#include "sub0platform/error.hpp"
 
 #include <chrono>
 #include <cstddef>
@@ -15,7 +15,7 @@
 #include <string>
 #include <string_view>
 
-namespace sub0squad::platform {
+namespace sub0platform {
 
 /// The native socket (a descriptor on POSIX, a SOCKET on Windows) widened to one type; -1 when none.
 using NativeSocket = std::intptr_t;
@@ -93,4 +93,4 @@ void closeSocket(NativeSocket s);
 /// True when something on this host accepts connections on 127.0.0.1:`port`.
 [[nodiscard]] bool loopbackPortInUse(std::uint16_t port);
 
-}  // namespace sub0squad::platform
+}  // namespace sub0platform

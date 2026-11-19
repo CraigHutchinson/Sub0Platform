@@ -1,17 +1,17 @@
-// Windows backend of platform_wait.hpp. Every watched socket signals one shared event (WSAEventSelect); each wait first resets it and asks WSAPoll
+// Windows backend of wait.hpp. Every watched socket signals one shared event (WSAEventSelect); each wait first resets it and asks WSAPoll
 // for the sockets' state as it is now (WSAEventSelect alone reports a change once, epoll reports a state for as long as it lasts), then waits
 // in WaitForMultipleObjects on that event, the wake-up event, the stop event and the watched processes. The stop event is named after this
 // process (win32::stopEventName), so terminateProcess in another process can set it; Ctrl+C and Ctrl+Break on a console set it too.
-#include "sub0squad/platform_wait.hpp"
+#include "sub0platform/wait.hpp"
 
-#include "platform_win32_util.hpp"
-#include "platform_util.hpp"
+#include "win32_util.hpp"
+#include "util.hpp"
 
 #include <algorithm>
 #include <atomic>
 #include <map>
 
-namespace sub0squad::platform {
+namespace sub0platform {
 
 namespace {
 
@@ -186,4 +186,4 @@ std::expected<std::vector<WaitEvent>, PlatformError> Waiter::wait(std::optional<
     }
 }
 
-}  // namespace sub0squad::platform
+}  // namespace sub0platform

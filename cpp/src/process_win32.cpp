@@ -1,16 +1,16 @@
-// Windows backend of platform_process.hpp: CreateProcessW with an explicit list of inherited handles (the Windows form of closefrom), a job object
+// Windows backend of process.hpp: CreateProcessW with an explicit list of inherited handles (the Windows form of closefrom), a job object
 // per new session so the whole tree can be ended, and a polled pipe for capture. Arguments are quoted by the rules of CommandLineToArgvW and the C
 // runtime. A batch file (.cmd, .bat) is parsed by cmd.exe by other rules; do not pass untrusted arguments to one.
-#include "sub0squad/platform_process.hpp"
+#include "sub0platform/process.hpp"
 
-#include "platform_win32_util.hpp"
+#include "win32_util.hpp"
 
 #include <algorithm>
 #include <charconv>
 #include <cwchar>
 #include <thread>
 
-namespace sub0squad::platform {
+namespace sub0platform {
 
 namespace {
 
@@ -173,7 +173,7 @@ std::expected<Child, PlatformError> start(const ProcessSpec& spec, HANDLE captur
     Handle job;
     if (spec.newSession) {
         // No JOB_OBJECT_LIMIT_BREAKAWAY_OK: the job is the containment. A job's process that starts a new session of its own (an escapee) stays in
-        // this job, so terminate and kill still reach it; on POSIX the shim finds such a process as a descendant instead.
+        // this job, so terminate and kill still reach it; on POSIX such a process is found by descendants().
         job.reset(::CreateJobObjectW(nullptr, nullptr));
         if (job.valid() && !::AssignProcessToJobObject(job.get(), pi.hProcess)) job.reset();   // no job: terminate() then ends the process alone
         ::ResumeThread(pi.hThread);
@@ -317,8 +317,7 @@ std::optional<ExitStatus> Child::wait(std::optional<std::chrono::milliseconds> t
 
 bool Child::terminate()
 {
-    // Not graceful: Windows has no SIGTERM for a process without a console of ours. A graceful stop is a request over the daemon's channel
-    // (docs/PLATFORM.md section 6, decided with the shim in slice 5).
+    // Not graceful: Windows has no SIGTERM for a process without a console of ours. A graceful stop is a request over the caller's own channel.
     if (handle_ == 0 || (status_ && group_ == 0)) return false;   // a job may outlive its ended leader
     const bool ok = group_ != 0 ? ::TerminateJobObject(reinterpret_cast<HANDLE>(group_), kTerminateCode) : ::TerminateProcess(reinterpret_cast<HANDLE>(handle_), kTerminateCode);
     if (ok) endedBy_ = 15;
@@ -384,4 +383,4 @@ std::expected<Captured, PlatformError> runCaptured(const ProcessSpec& spec, cons
     return c;
 }
 
-}  // namespace sub0squad::platform
+}  // namespace sub0platform

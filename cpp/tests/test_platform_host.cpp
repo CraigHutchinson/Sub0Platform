@@ -1,8 +1,8 @@
-// Host facts (platform_host.hpp, docs/PLATFORM.md): the pure parsers on fixed /proc text, then the live calls for sanity (not exact values).
-#include "check.hpp"
-#include "sub0squad/platform_host.hpp"
+// Host facts (host.hpp): the pure parsers on fixed /proc text, then the live calls for sanity (not exact values).
+#include "sub0platform/testing/check.hpp"
+#include "sub0platform/host.hpp"
 
-using namespace sub0squad::platform;
+using namespace sub0platform;
 
 int main()
 {

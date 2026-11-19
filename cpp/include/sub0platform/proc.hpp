@@ -1,9 +1,9 @@
 #pragma once
-/// @file platform_proc.hpp
-/// Process identity and the process tree (docs/PLATFORM.md, module platform_proc): this program's own path and id, whether a recorded process is
+/// @file proc.hpp
+/// Process identity and the process tree: this program's own path and id, whether a recorded process is
 /// still the same one, its descendants and its command line. The POSIX backend reads /proc; the parsers are pure so they are tested on fixed text.
 
-#include "sub0squad/platform_process.hpp"
+#include "sub0platform/process.hpp"
 
 #include <cstdint>
 #include <filesystem>
@@ -12,10 +12,9 @@
 #include <string_view>
 #include <vector>
 
-namespace sub0squad::platform {
+namespace sub0platform {
 
-/// The path of the running program's file; empty when it cannot be found. Never execute it from a test binary (catalogue row 32): a test
-/// that links the library is not the `sub0squad` program.
+/// The path of the running program's file; empty when it cannot be found. In a test binary it is the test program itself, so never execute it there.
 [[nodiscard]] std::filesystem::path selfExecutable();
 
 /// The id of the running process.
@@ -89,4 +88,4 @@ struct ProcStat
 /// Split the NUL-separated text of /proc/PID/cmdline into arguments (a trailing NUL ends the last argument, it does not add an empty one).
 [[nodiscard]] std::vector<std::string> parseCmdline(std::string_view text);
 
-}  // namespace sub0squad::platform
+}  // namespace sub0platform

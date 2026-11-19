@@ -1,10 +1,10 @@
-// Windows backend of platform_ipc.hpp: AF_UNIX stream sockets (Windows 10 1803 and later), named by the path in UTF-8. sockaddr_un holds 108
+// Windows backend of ipc.hpp: AF_UNIX stream sockets (Windows 10 1803 and later), named by the path in UTF-8. sockaddr_un holds 108
 // bytes and Windows has no /proc/self/fd way around that, so a longer path is moved to a short stable name (localSocketFile). Windows records no
 // peer credentials on these sockets: who may connect is decided by the directory's ACL (owner-only: the state directory, or the user's own
 // profile for a moved name), and peerIsSameUser answers true.
-#include "sub0squad/platform_ipc.hpp"
+#include "sub0platform/ipc.hpp"
 
-#include "platform_win32_util.hpp"
+#include "win32_util.hpp"
 
 #include <afunix.h>
 
@@ -14,7 +14,7 @@
 #include <cwctype>
 #include <vector>
 
-namespace sub0squad::platform {
+namespace sub0platform {
 
 namespace {
 
@@ -149,4 +149,4 @@ std::string peerUser(const SocketStream&)
     return "user:" + win32::narrow(std::wstring_view(name, n - 1));
 }
 
-}  // namespace sub0squad::platform
+}  // namespace sub0platform

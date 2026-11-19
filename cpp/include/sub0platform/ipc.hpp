@@ -1,16 +1,16 @@
 #pragma once
-/// @file platform_ipc.hpp
-/// The local control socket (docs/PLATFORM.md, module platform_ipc): a stream socket named by a path in the state directory, made of the same
-/// SocketStream and SocketListener as TCP (platform_net.hpp). POSIX: AF_UNIX, opened through /proc/self/fd so the path may be longer than
+/// @file ipc.hpp
+/// The local control socket: a stream socket named by a path in the state directory, made of the same
+/// SocketStream and SocketListener as TCP (net.hpp). POSIX: AF_UNIX, opened through /proc/self/fd so the path may be longer than
 /// sockaddr_un allows, created owner-only, the peer checked by SO_PEERCRED. Windows: AF_UNIX as well (Windows 10 1803 and later).
 
-#include "sub0squad/platform_net.hpp"
+#include "sub0platform/net.hpp"
 
 #include <chrono>
 #include <filesystem>
 #include <string>
 
-namespace sub0squad::platform {
+namespace sub0platform {
 
 /// Why a local connection failed; `noServer` when nothing listens there (no socket file, or nobody accepting): "start the daemon", not a fault.
 struct LocalConnectError
@@ -47,4 +47,4 @@ int clearStaleLocalSockets(std::chrono::seconds minAge = std::chrono::minutes(1)
 /// The user at the other end, for records ("uid:1000"); "uid:0" when it cannot be read. Windows: the name of this process's user.
 [[nodiscard]] std::string peerUser(const SocketStream& stream);
 
-}  // namespace sub0squad::platform
+}  // namespace sub0platform

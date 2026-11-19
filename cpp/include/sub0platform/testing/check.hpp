@@ -1,6 +1,6 @@
 #pragma once
 // Tiny test helpers: no framework dependency.
-#include "sub0squad/platform_file.hpp"   // removeTree
+#include "sub0platform/file.hpp"   // removeTree
 
 #include <chrono>
 #include <cstdio>
@@ -18,12 +18,12 @@ inline int gFailures = 0;
 
 #define CHECK_GE(a, b) do { auto&& _a = (a); auto&& _b = (b); if (!(_a >= _b)) { std::fprintf(stderr, "%s:%d: CHECK_GE failed: %s < %s\n", __FILE__, __LINE__, #a, #b); ++gFailures; } } while (0)
 
-/// A fresh directory under `$SUB0SQUAD_TEST_TMP`, or `test-tmp` in the working directory (ctest runs in the build directory, so
+/// A fresh directory under `$SUB0PLATFORM_TEST_TMP`, or `test-tmp` in the working directory (ctest runs in the build directory, so
 /// tests never write to shared locations like /tmp). Local socket paths are limited to ~107 bytes: the POSIX socket code uses the
 /// /proc/self/fd trick, so a long base is fine there; on Windows the path itself must fit.
 inline std::filesystem::path makeTempDir(const char* tag)
 {
-    const char* base = std::getenv("SUB0SQUAD_TEST_TMP");
+    const char* base = std::getenv("SUB0PLATFORM_TEST_TMP");
     const std::filesystem::path root = base ? std::filesystem::path{base} : std::filesystem::current_path() / "test-tmp";
     std::filesystem::create_directories(root);
     // create_directory fails on a name that exists, so the first name it makes is this test's alone (what mkdtemp does, on every system).
@@ -45,7 +45,7 @@ inline void removeTree(const std::filesystem::path& p)
 {
     for (int i = 0; i < 20; ++i) {
         // The platform's removal opens no file: std::filesystem::remove_all blocked for ever on a daemon's socket file on Windows Server 2022.
-        if (sub0squad::platform::removeTree(p)) return;
+        if (sub0platform::removeTree(p)) return;
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
 }

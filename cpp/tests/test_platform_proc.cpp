@@ -1,15 +1,15 @@
-// Process identity and the tree (platform_proc.hpp, docs/PLATFORM.md): the pure parsers on fixed text, then the live calls against this
+// Process identity and the tree (proc.hpp): the pure parsers on fixed text, then the live calls against this
 // process and short-lived children (tests/platform_child.cpp) started through platform_process.
-#include "check.hpp"
-#include "sub0squad/platform_proc.hpp"
-#include "sub0squad/platform_process.hpp"
+#include "sub0platform/testing/check.hpp"
+#include "sub0platform/proc.hpp"
+#include "sub0platform/process.hpp"
 
 #include <algorithm>
 #include <cstdlib>
 #include <fstream>
 #include <thread>
 
-using namespace sub0squad::platform;
+using namespace sub0platform;
 using namespace std::chrono_literals;
 namespace fs = std::filesystem;
 
@@ -26,7 +26,7 @@ int main()
     }
     {   // /proc/PID/cmdline: NUL-separated, a trailing NUL ends the last argument
         using namespace std::string_literals;
-        CHECK((parseCmdline("sub0squad\0portal\0--port\0""8080\0"s) == std::vector<std::string>{"sub0squad", "portal", "--port", "8080"}));
+        CHECK((parseCmdline("prog\0serve\0--port\0""8080\0"s) == std::vector<std::string>{"prog", "serve", "--port", "8080"}));
         CHECK((parseCmdline("a\0\0b"s) == std::vector<std::string>{"a", "", "b"}));   // an empty argument in the middle is kept
         CHECK(parseCmdline("").empty());
     }
@@ -45,7 +45,7 @@ int main()
     }
     {   // descendants: a child and its grandchild; once reaped, the child is gone and its stamp no longer answers
         const auto dir = makeTempDir("platform-proc");
-        const std::string child = SUB0SQUAD_PLATFORM_CHILD;
+        const std::string child = SUB0PLATFORM_CHILD;
         auto c = spawn(ProcessSpec{.argv = {child, "tree", "gc.pid", child}, .cwd = dir});
         CHECK(c.has_value());
         if (c) {
@@ -64,11 +64,11 @@ int main()
         ::removeTree(dir);   // check.hpp's, which retries; platform::removeTree is also in scope
     }
     {   // the environment is inherited by children started afterwards
-        setEnvironment("SUB0SQUAD_PLATFORM_PROC_TEST", "yes");
-        auto r = runCaptured(ProcessSpec{.argv = {SUB0SQUAD_PLATFORM_CHILD, "env", "SUB0SQUAD_PLATFORM_PROC_TEST"}});
+        setEnvironment("SUB0PLATFORM_PROC_TEST", "yes");
+        auto r = runCaptured(ProcessSpec{.argv = {SUB0PLATFORM_CHILD, "env", "SUB0PLATFORM_PROC_TEST"}});
         CHECK(r.has_value() && r->output == "yes");
-        unsetEnvironment("SUB0SQUAD_PLATFORM_PROC_TEST");
-        CHECK(std::getenv("SUB0SQUAD_PLATFORM_PROC_TEST") == nullptr);
+        unsetEnvironment("SUB0PLATFORM_PROC_TEST");
+        CHECK(std::getenv("SUB0PLATFORM_PROC_TEST") == nullptr);
     }
     return finish();
 }

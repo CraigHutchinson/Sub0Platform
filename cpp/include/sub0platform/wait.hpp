@@ -1,13 +1,13 @@
 #pragma once
-/// @file platform_wait.hpp
-/// Waiting for several things at once (docs/PLATFORM.md, module platform_wait): sockets becoming readable or writable, processes exiting, a
+/// @file wait.hpp
+/// Waiting for several things at once: sockets becoming readable or writable, processes exiting, a
 /// wake-up from another thread, and a request to stop this process, each reported with the caller's tag. POSIX: epoll, pidfd, eventfd and a
 /// signalfd for SIGTERM and SIGINT. Windows: one event for every socket (WSAEventSelect) checked with WSAPoll, process handles, an event for the
 /// wake-up, and a named event for the stop request (platform_proc's terminateProcess sets it), all in WaitForMultipleObjects (at most 60 processes).
 
-#include "sub0squad/platform_error.hpp"
-#include "sub0squad/platform_net.hpp"
-#include "sub0squad/platform_process.hpp"
+#include "sub0platform/error.hpp"
+#include "sub0platform/net.hpp"
+#include "sub0platform/process.hpp"
 
 #include <chrono>
 #include <cstdint>
@@ -16,7 +16,7 @@
 #include <optional>
 #include <vector>
 
-namespace sub0squad::platform {
+namespace sub0platform {
 
 /// What a wait saw.
 struct WaitEvent
@@ -68,4 +68,4 @@ private:
     std::unique_ptr<State> state_;
 };
 
-}  // namespace sub0squad::platform
+}  // namespace sub0platform
