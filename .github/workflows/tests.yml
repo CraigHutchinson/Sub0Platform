@@ -1,5 +1,5 @@
 # Sub0Platform tests on Windows and Linux: the Python package against the shared conformance vectors, with real
-# processes, files and locks. The C++ library joins when it lands (cpp/README.md).
+# processes, files and locks; the C++ library (cpp/README.md) built and tested with CMake on Linux (GCC) and Windows (MinGW-w64, UCRT).
 name: tests
 on:
   push:
@@ -20,3 +20,33 @@ jobs:
           python-version: ${{ matrix.python }}
       - name: Tests
         run: python -m unittest discover -s python/tests -v
+  cpp-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Ninja
+        run: sudo apt-get install -y ninja-build
+      - name: Configure
+        run: cmake -S cpp -B cpp/build -G Ninja -DCMAKE_BUILD_TYPE=Debug
+      - name: Build
+        run: cmake --build cpp/build
+      - name: Tests
+        run: ctest --test-dir cpp/build --output-on-failure
+  cpp-windows:
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: msys2 {0}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: msys2/setup-msys2@v2
+        with:
+          msystem: UCRT64
+          update: false
+          install: mingw-w64-ucrt-x86_64-gcc mingw-w64-ucrt-x86_64-cmake mingw-w64-ucrt-x86_64-ninja
+      - name: Configure
+        run: cmake -S cpp -B cpp/build -G Ninja -DCMAKE_BUILD_TYPE=Debug
+      - name: Build
+        run: cmake --build cpp/build
+      - name: Tests
+        run: ctest --test-dir cpp/build --output-on-failure
