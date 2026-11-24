@@ -26,6 +26,35 @@ def spawnDetached(cmd, logFile, belowNormal=True):
                                 start_new_session=not IS_WINDOWS)
 
 
+HIGH_PRIORITY_CLASS = 0x00000080
+
+
+def launch(cmd, timeout=None, cpu=None, highPriority=True):
+    """Run cmd to completion with its output discarded, for a measurement: at raised priority (HIGH_PRIORITY_CLASS on Windows;
+    POSIX priority is left alone) and, when `cpu` is given, pinned to that one logical CPU, so the scheduler cannot move it
+    mid-run. A process still running after `timeout` seconds is killed and subprocess.TimeoutExpired is raised; a non-zero exit
+    raises subprocess.CalledProcessError."""
+    quiet = dict(stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    if IS_WINDOWS:
+        p = subprocess.Popen(cmd, creationflags=HIGH_PRIORITY_CLASS if highPriority else 0, **quiet)
+        if cpu is not None:
+            import ctypes
+            ctypes.windll.kernel32.SetProcessAffinityMask(int(p._handle), ctypes.c_size_t(1 << cpu))
+        try:
+            code = p.wait(timeout)
+        except subprocess.TimeoutExpired:
+            p.kill()
+            p.wait()
+            raise
+    else:
+        def pin():
+            if cpu is not None and hasattr(os, "sched_setaffinity"):
+                os.sched_setaffinity(0, {cpu})
+        code = subprocess.run(cmd, preexec_fn=pin, timeout=timeout, **quiet).returncode
+    if code != 0:
+        raise subprocess.CalledProcessError(code, cmd)
+
+
 def alive(pid):
     """Whether a process with exactly this pid exists (no subprocess, no text matching)."""
     if IS_WINDOWS:
