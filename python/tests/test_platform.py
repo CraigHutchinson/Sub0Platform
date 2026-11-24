@@ -82,6 +82,16 @@ class TestProc(Tmp):
             if p.poll() is None:
                 p.kill()
 
+    def test_launch_runs_to_completion_and_raises_on_failure_and_timeout(self):
+        proc.launch([sys.executable, "-c", "pass"])
+        proc.launch([sys.executable, "-c", "pass"], timeout=30, cpu=0)
+        with self.assertRaises(subprocess.CalledProcessError):
+            proc.launch([sys.executable, "-c", "raise SystemExit(3)"])
+        began = time.monotonic()
+        with self.assertRaises(subprocess.TimeoutExpired):
+            proc.launch([sys.executable, "-c", "import time; time.sleep(60)"], timeout=1)
+        self.assertLess(time.monotonic() - began, 20)
+
     def test_dead_pid(self):
         self.assertFalse(proc.alive(deadPid()))
         self.assertIsNone(proc.cpuSeconds(deadPid()))
