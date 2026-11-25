@@ -15,6 +15,7 @@ facts, CPU topology, sockets, local IPC and memory mapping.
 | `paths` | `toPosix("D:/x")` = `/mnt/d/x`, `toWindows("/mnt/d/x")` = `D:/x`, `local(p)` for this platform |
 | `dirs` | `config(app)` (roaming on Windows: `%APPDATA%`; `$XDG_CONFIG_HOME`), `cache(app)` and `state(app)` (local: `%LOCALAPPDATA%`; XDG) |
 | `proc` | `spawnDetached` (outlives its starter; no console, below-normal priority on Windows), `launch(cmd, timeout, cpu)` (a pinned, raised-priority measurement run that is killed at the timeout), `alive(pid)` (exact), `terminate(pid)` (the process tree), `cpuSeconds(pid)` |
+| `topology.readTopology()` | Physical-core sibling groups visible to the current affinity mask. Includes OS performance classes where available. Returns `None` when topology is unavailable. |
 | `fs` | `atomicWrite(path, data)`: temporary file, fsync, replace, retried while a Windows reader holds the target |
 | `lock` | `ExclusiveLock(path)`: one holder across processes; a crashed owner's lock is set aside, a live owner waited for |
 
