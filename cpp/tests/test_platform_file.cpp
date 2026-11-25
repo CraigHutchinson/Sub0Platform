@@ -1,6 +1,7 @@
 // Files (file.hpp): whole reads and writes in binary mode, atomic replacement, appends with permissions, sync and
 // truncate, modification times, and whole writes and reads on a descriptor.
 #include "sub0platform/testing/check.hpp"
+#include "sub0platform/dirs.hpp"
 #include "sub0platform/file.hpp"
 
 #if defined(_WIN32)
@@ -58,6 +59,36 @@ int main()
         CHECK(appendToFile(dir / "log.ndjson", "four\n").has_value());
         CHECK(readFileText(dir / "log.ndjson") == "one\nthree\nfour\n");
         CHECK(!AppendFile::open(dir / "no" / "such" / "dir" / "f").has_value());
+    }
+    {
+        const auto path = dir / "shared.lock";
+        {
+            auto first = FileLock::tryShared(path);
+            auto second = FileLock::tryShared(path);
+            CHECK(first && first->has_value());
+            CHECK(second && second->has_value());
+            auto writer = FileLock::tryExclusive(path);
+            CHECK(writer && !writer->has_value());
+        }
+        auto writer = FileLock::tryExclusive(path);
+        CHECK(writer && writer->has_value());
+        auto reader = FileLock::tryShared(path);
+        CHECK(reader && !reader->has_value());
+    }
+    {
+#if defined(_WIN32)
+        const std::string variable = "LOCALAPPDATA";
+#else
+        const std::string variable = "XDG_STATE_HOME";
+#endif
+        const auto previous = getEnvironment(variable);
+        const auto utf8 = (dir / u8"stäté").u8string();
+        setEnvironment(variable, std::string(utf8.begin(), utf8.end()));
+        const auto path = stateDirectory("test-app");
+        if (previous) setEnvironment(variable, *previous);
+        else unsetEnvironment(variable);
+        CHECK(path && *path == dir / u8"stäté" / "test-app");
+        CHECK(path && !fs::exists(*path));
     }
     {   // the modification time moves with a write
         const auto t = modifiedSeconds(dir / "log.ndjson");

@@ -74,7 +74,7 @@ if(SUB0PLATFORM_BUILD_TESTS)
   target_compile_options(platform_child PRIVATE ${SUB0PLATFORM_STRICT})
   set_target_properties(platform_child PROPERTIES CXX_STANDARD 23 CXX_STANDARD_REQUIRED ON CXX_EXTENSIONS OFF)
 
-  foreach(t process proc host file net wait)
+  foreach(t process proc host file net wait lease)
     add_executable(test_platform_${t} tests/test_platform_${t}.cpp)
     target_link_libraries(test_platform_${t} PRIVATE sub0platform)
     target_compile_options(test_platform_${t} PRIVATE ${SUB0PLATFORM_STRICT} -g)   # line numbers when a test crashes
@@ -83,4 +83,13 @@ if(SUB0PLATFORM_BUILD_TESTS)
     set_target_properties(test_platform_${t} PROPERTIES CXX_STANDARD 23 CXX_STANDARD_REQUIRED ON CXX_EXTENSIONS OFF)
     add_test(NAME test_platform_${t} COMMAND test_platform_${t})
   endforeach()
+
+  configure_file(../conformance/lease_owner.jsonl lease_owner.jsonl COPYONLY)
+  find_package(Python3 COMPONENTS Interpreter QUIET)
+  if(Python3_Interpreter_FOUND)
+    add_test(NAME test_platform_lease_interop
+      COMMAND ${CMAKE_COMMAND} -E env "SUB0PLATFORM_LEASE_CPP=$<TARGET_FILE:test_platform_lease>"
+      "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/../python/tests/test_lease.py")
+    set_tests_properties(test_platform_lease_interop PROPERTIES TIMEOUT 30)
+  endif()
 endif()

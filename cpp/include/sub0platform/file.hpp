@@ -63,7 +63,7 @@ private:
     int handle_ = -1;
 };
 
-/// An exclusive lock on a file, held until the object is destroyed or this process ends (the system releases it even after a crash). Move-only.
+/// A shared or exclusive OS file lock. The system releases the lock when its handle closes, including on process exit.
 class FileLock
 {
 public:
@@ -74,12 +74,19 @@ public:
     FileLock& operator=(FileLock&& other) noexcept;
     ~FileLock();
 
-    /// Take the lock on `path` (created owner-only if new) without waiting: nullopt when another process holds it, an error when the file
-    /// cannot be opened. POSIX: flock; Windows: LockFileEx.
+    /// Takes an exclusive lock without waiting. POSIX uses flock on a file created with owner-only permissions. Windows uses LockFileEx.
+    /// @param path A stable lock-file path. Callers must keep the lock file in place while it is in use.
+    /// @return The held lock, an empty optional when busy, or the platform error.
     [[nodiscard]] static std::expected<std::optional<FileLock>, PlatformError> tryExclusive(const std::filesystem::path& path);
+
+    /// Takes a shared lock without waiting. Shared holders coexist until an exclusive holder takes the file.
+    /// @param path A stable lock-file path. Callers must keep the lock file in place while it is in use.
+    /// @return The held lock, an empty optional when busy, or the platform error.
+    [[nodiscard]] static std::expected<std::optional<FileLock>, PlatformError> tryShared(const std::filesystem::path& path);
     [[nodiscard]] bool isHeld() const { return handle_ != -1; }
 
 private:
+    [[nodiscard]] static std::expected<std::optional<FileLock>, PlatformError> tryAcquire(const std::filesystem::path& path, bool exclusive);
     explicit FileLock(std::intptr_t handle) : handle_(handle) {}
     std::intptr_t handle_ = -1;
 };

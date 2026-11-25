@@ -5,17 +5,26 @@
 #include "util.hpp"
 
 #include <cerrno>
-#include <cstring>
 #include <fstream>
 #include <sstream>
 
 namespace sub0platform {
 
+std::expected<std::optional<FileLock>, PlatformError> FileLock::tryExclusive(const std::filesystem::path& path)
+{
+    return tryAcquire(path, true);
+}
+
+std::expected<std::optional<FileLock>, PlatformError> FileLock::tryShared(const std::filesystem::path& path)
+{
+    return tryAcquire(path, false);
+}
+
 namespace fs = std::filesystem;
 
 namespace {
 
-PlatformError fromErrno(std::string operation, int code = errno) { return PlatformError{std::move(operation), code, std::strerror(code)}; }
+PlatformError fromErrno(std::string operation, int code = errno) { return PlatformError{std::move(operation), code, std::generic_category().message(code)}; }
 
 PlatformError fromCode(std::string operation, const std::error_code& ec) { return PlatformError{std::move(operation), ec.value(), ec.message()}; }
 
