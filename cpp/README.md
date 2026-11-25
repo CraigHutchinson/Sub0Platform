@@ -9,16 +9,18 @@ local control socket, and waiting on several things at once. It is Sub0Squad's l
 | `error` | `PlatformError`: the one error type, with the operation, the native code and a sentence for a person |
 | `process` | `spawn` and `runCaptured`: the one launcher for child processes (argument vectors, captured or piped output, timeouts, process groups) |
 | `proc` | this process's id, program and command line; `isAlive`, `descendants`, `terminateProcess`; `setEnvironment`, `unsetEnvironment`, `getEnvironment` |
+| `dirs` | `stateDirectory` follows the Python package's per-user state convention |
 | `host` | `memory`, `cpuTimes`, `loadAverage`, `freeDiskMiB` and `gpu` |
-| `file` | `readFile`, `writeFile`, `writeFileAtomic`, `appendToFile`, `removeTree` and `FileLock` (one holder across processes) |
+| `file` | `readFile`, `writeFile`, `writeFileAtomic`, `appendToFile`, `removeTree` and `FileLock` (shared or exclusive across processes) |
 | `net` | `SocketStream` and `SocketListener` over TCP, with deadlines |
 | `ipc` | the local control socket: a stream socket named by a path (AF_UNIX on both systems) |
+| `lease` | `MachineLease`: Python-compatible per-user shared and exclusive machine leases under ADR 0005 |
 | `wait` | `Waiter`: sockets, child exits, wake-ups and stop requests in one wait |
 
 `getEnvironment` returns `nullopt` for an unset variable and `""` for a variable set to nothing. Use it in place of `std::getenv`. On Windows
 it reads the system's copy as UTF-8, the encoding `setEnvironment` writes; the C runtime's copy drops an empty value.
 
-Not in this library yet: the path mapping and per-user directories of the Python package, Sub0Log's Windows argument quoting, and the
+Not in this library yet: the path mapping, config and cache directories of the Python package, Sub0Log's Windows argument quoting, and the
 conformance vectors in `../conformance/` that they read. The vectors apply once those modules land.
 
 ## Layout

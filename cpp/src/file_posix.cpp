@@ -11,7 +11,6 @@
 
 #include <cerrno>
 #include <cstdio>
-#include <cstring>
 
 namespace sub0platform {
 
@@ -19,7 +18,7 @@ namespace fs = std::filesystem;
 
 namespace {
 
-PlatformError fromErrno(std::string operation, int code = errno) { return PlatformError{std::move(operation), code, std::strerror(code)}; }
+PlatformError fromErrno(std::string operation, int code = errno) { return PlatformError{std::move(operation), code, std::generic_category().message(code)}; }
 
 mode_t modeOf(fs::perms p) { return static_cast<mode_t>(p & fs::perms::mask); }
 
@@ -91,11 +90,13 @@ FileLock::~FileLock()
     if (handle_ != -1) ::close(static_cast<int>(handle_));   // closing the descriptor releases the flock
 }
 
-std::expected<std::optional<FileLock>, PlatformError> FileLock::tryExclusive(const fs::path& path)
+std::expected<std::optional<FileLock>, PlatformError> FileLock::tryAcquire(const fs::path& path, bool exclusive)
 {
     const int fd = ::open(path.c_str(), O_RDWR | O_CREAT | O_CLOEXEC, 0600);
     if (fd < 0) return std::unexpected(fromErrno("open " + path.string()));
-    if (::flock(fd, LOCK_EX | LOCK_NB) != 0) {
+    int result;
+    do result = ::flock(fd, (exclusive ? LOCK_EX : LOCK_SH) | LOCK_NB); while (result != 0 && errno == EINTR);
+    if (result != 0) {
         const int err = errno;
         ::close(fd);
         if (err == EWOULDBLOCK) return std::optional<FileLock>{};

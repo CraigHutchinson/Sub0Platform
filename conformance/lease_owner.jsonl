@@ -1,0 +1,3 @@
+{"pid":123456789,"time":0,"what":"measure \"vectors\" \\ path","tool":"legacy"}
+{"tool":"engine \ud83d\udeb2","mode":"shared","pid":123456789,"what":"serve\nqueries","time":1.25,"cores":"P0–P3","memory_bandwidth":"high","gpu":"GPU 0","power_state":"AC"}
+{"pid":123456789,"time":2,"what":"bad lease mode","tool":"bad","mode":"parallel"}

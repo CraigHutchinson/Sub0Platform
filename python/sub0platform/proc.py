@@ -66,10 +66,13 @@ def alive(pid):
         h = k.OpenProcess(0x1000, False, pid)  # PROCESS_QUERY_LIMITED_INFORMATION
         if not h:
             return ctypes.get_last_error() == 5  # access denied: exists; invalid parameter: does not
+        k.GetExitCodeProcess.argtypes = [wintypes.HANDLE, ctypes.POINTER(wintypes.DWORD)]
+        k.GetExitCodeProcess.restype = wintypes.BOOL
+        k.CloseHandle.argtypes = [wintypes.HANDLE]
+        k.CloseHandle.restype = wintypes.BOOL
         try:
             code = wintypes.DWORD()
-            k.GetExitCodeProcess(h, ctypes.byref(code))
-            return code.value == 259  # STILL_ACTIVE
+            return bool(k.GetExitCodeProcess(h, ctypes.byref(code))) and code.value == 259  # STILL_ACTIVE
         finally:
             k.CloseHandle(h)
     try:

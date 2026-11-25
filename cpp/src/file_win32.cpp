@@ -13,7 +13,6 @@
 #include <algorithm>
 #include <cerrno>
 #include <climits>
-#include <cstring>
 
 namespace sub0platform {
 
@@ -21,7 +20,7 @@ namespace fs = std::filesystem;
 
 namespace {
 
-PlatformError fromErrno(std::string operation, int code = errno) { return PlatformError{std::move(operation), code, std::strerror(code)}; }
+PlatformError fromErrno(std::string operation, int code = errno) { return PlatformError{std::move(operation), code, std::generic_category().message(code)}; }
 
 constexpr std::uint64_t kEpochTicks = 116444736000000000ULL;   // 1970-01-01 in 100 ns ticks since 1601
 
@@ -97,13 +96,14 @@ FileLock::~FileLock()
     if (handle_ != -1) ::CloseHandle(reinterpret_cast<HANDLE>(handle_));   // closing the handle releases the lock
 }
 
-std::expected<std::optional<FileLock>, PlatformError> FileLock::tryExclusive(const fs::path& path)
+std::expected<std::optional<FileLock>, PlatformError> FileLock::tryAcquire(const fs::path& path, bool exclusive)
 {
     HANDLE h = ::CreateFileW(path.c_str(), GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, nullptr, OPEN_ALWAYS,
                              FILE_ATTRIBUTE_NORMAL, nullptr);
     if (h == INVALID_HANDLE_VALUE) return std::unexpected(win32::lastError("open " + path.string()));
     OVERLAPPED at{};
-    if (!::LockFileEx(h, LOCKFILE_EXCLUSIVE_LOCK | LOCKFILE_FAIL_IMMEDIATELY, 0, 1, 0, &at)) {
+    const DWORD flags = LOCKFILE_FAIL_IMMEDIATELY | (exclusive ? LOCKFILE_EXCLUSIVE_LOCK : 0);
+    if (!::LockFileEx(h, flags, 0, 1, 0, &at)) {
         const DWORD err = ::GetLastError();
         ::CloseHandle(h);
         if (err == ERROR_LOCK_VIOLATION || err == ERROR_IO_PENDING) return std::optional<FileLock>{};

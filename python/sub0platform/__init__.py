@@ -7,6 +7,7 @@ Modules (the C++ library under cpp/ uses the same names):
   proc   detached servers, a pinned measurement launch with a timeout, exact liveness, stopping a process tree
   fs     atomic replace that survives Windows readers
   lock   an exclusive lock file that recovers from a crashed owner
+  lease  shared and exclusive machine leases interoperable with the C++ library
 
 Behaviour shared with the C++ library is pinned by the JSON vectors in conformance/.
 """
